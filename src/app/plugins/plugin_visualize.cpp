@@ -41,6 +41,7 @@ PluginVisualize::PluginVisualize(FrameBuffer *_buffer,
   _v_detected_edges = new VarBool("detected edges", false);
   _v_complete_sobel = new VarBool("complete edge detection", false);
   _v_complete_sobel->setBool(false);
+  _v_chessboard = new VarBool("chessbooard", false);
 
   _settings = new VarList("Visualization");
   _settings->addChild(_v_enabled);
@@ -52,6 +53,7 @@ PluginVisualize::PluginVisualize(FrameBuffer *_buffer,
   _settings->addChild(_v_calibration_result);
   _settings->addChild(_v_detected_edges);
   _settings->addChild(_v_complete_sobel);
+  _settings->addChild(_v_chessboard);
   _threshold_lut = 0;
   edge_image = 0;
   temp_grey_image = 0;
@@ -103,9 +105,12 @@ void PluginVisualize::DrawCameraImage(FrameData *data,
     rgb *vis_ptr = vis_frame->data.getPixelData();
     raw8 *grey_ptr = img_greyscale->getPixelData();
     for (int i = 0; i < vis_frame->data.getNumPixels(); ++i) {
-      auto& color = vis_ptr[i];
+      auto &color = vis_ptr[i];
       color.r = color.g = color.b = grey_ptr[i].v;
     }
+  }
+  if (_v_chessboard->getBool()) {
+    DrawChessboard(data, vis_frame);
   }
 }
 
@@ -487,4 +492,38 @@ void PluginVisualize::drawFieldLine(const GVector::vector3d<double> &start,
     lastInWorld = nextInWorld;
     lastInImage = nextInImage;
   }
+}
+
+void PluginVisualize::DrawChessboard(FrameData *data,
+                                     VisualizationFrame *vis_frame) {
+  bool *found_pattern;
+  if ((found_pattern = reinterpret_cast<bool *>(
+           data->map.get("chessboard_found"))) == nullptr) {
+    std::cerr << "chessboard_found key missing from data map.\n";
+    return;
+  }
+
+  if (!*found_pattern) {
+    return;
+  }
+
+  std::vector<cv::Point2f> *corners;
+  if ((corners = reinterpret_cast<std::vector<cv::Point2f> *>(
+           data->map.get("chessboard_corners"))) == nullptr) {
+    std::cerr << "chessboard_corners key missing from data map.\n";
+    return;
+  }
+  cv::Size *pattern_size;
+  if ((pattern_size = reinterpret_cast<cv::Size *>(
+           data->map.get("chessboard_size"))) == nullptr) {
+    std::cerr << "chessboard_size key missing from data map.\n";
+    return;
+  }
+
+  cv::Mat chessboard_img(vis_frame->data.getHeight(),
+                         vis_frame->data.getWidth(), CV_8UC3,
+                         vis_frame->data.getData());
+
+  cv::drawChessboardCorners(chessboard_img, *pattern_size, *corners,
+                            *found_pattern);
 }

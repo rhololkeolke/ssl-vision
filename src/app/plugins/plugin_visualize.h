@@ -62,9 +62,10 @@ protected:
   VarBool * _v_calibration_result;
   VarBool * _v_complete_sobel;
   VarBool * _v_detected_edges;
+  VarBool * _v_chessboard;
 
   const CameraParameters& camera_parameters;
-  const RoboCupField& real_field;
+  const RoboCupField& real_field;  
 
   LUT3D * _threshold_lut;
   greyImage* edge_image;
@@ -102,6 +103,8 @@ protected:
       VisualizationFrame* vis_frame, rgb edge_draw_color);
 
   void DrawSearchCorridors(FrameData* data, VisualizationFrame* vis_frame);
+
+  void DrawChessboard(FrameData* data, VisualizationFrame* vis_frame);
 public:
   PluginVisualize(FrameBuffer* _buffer, const CameraParameters& camera_params,
                   const RoboCupField& real_field);
