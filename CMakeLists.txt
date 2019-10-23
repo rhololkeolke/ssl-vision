@@ -85,7 +85,7 @@ include_directories(
 include(src/shared/CMakeLists.txt.inc)
 
 # Note: Bluefox SDK is not compatible with some components of OpenCV. Take care when enabling more.
-find_package( OpenCV REQUIRED COMPONENTS core imgproc imgcodecs )
+find_package( OpenCV REQUIRED COMPONENTS core imgproc imgcodecs calib3d)
 if( OpenCV_FOUND )
     message(STATUS "OpenCV ${OpenCV_VERSION} found")
     if(OpenCV_VERSION_MAJOR LESS 3)
@@ -214,6 +214,7 @@ set (SRCS ${SRCS}
 	src/app/gui/jog_dial.cpp
 
 	src/app/plugins/plugin_cameracalib.cpp
+	src/app/plugins/plugin_camera_intrinsic_calib.cpp
 	src/app/plugins/plugin_colorcalib.cpp
 	src/app/plugins/plugin_colorthreshold.cpp
 	src/app/plugins/plugin_detect_balls.cpp
