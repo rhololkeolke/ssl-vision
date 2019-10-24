@@ -19,6 +19,7 @@
 */
 //========================================================================
 #include "stack_robocup_ssl.h"
+#include <plugin_undistort.h>
 
 StackRoboCupSSL::StackRoboCupSSL(
     RenderOptions * _opts,
@@ -65,6 +66,8 @@ StackRoboCupSSL::StackRoboCupSSL(
   stack.push_back(new PluginColorThreshold(_fb,lut_yuv));
 
   stack.push_back(new PluginGreyscale(_fb));
+
+  stack.push_back(new PluginUndistort(_fb, *camera_parameters));
 
   stack.push_back(new PluginRunlengthEncode(_fb));
 

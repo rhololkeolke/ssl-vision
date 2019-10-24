@@ -227,6 +227,7 @@ set (SRCS ${SRCS}
 	src/app/plugins/plugin_visualize.cpp
 	src/app/plugins/plugin_dvr.cpp
 	src/app/plugins/plugin_auto_color_calibration.cpp
+	src/app/plugins/plugin_undistort.cpp
 	src/app/plugins/visionplugin.cpp
 
 	src/app/stacks/multistack_robocup_ssl.cpp
