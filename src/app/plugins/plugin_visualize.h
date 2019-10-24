@@ -55,6 +55,7 @@ protected:
   VarList * _settings;
   VarBool * _v_enabled;
   VarBool * _v_image;
+  VarBool * _v_undistorted;
   VarBool * _v_greyscale;
   VarBool * _v_thresholded;
   VarBool * _v_blobs;

@@ -33,6 +33,7 @@ PluginVisualize::PluginVisualize(FrameBuffer *_buffer,
       real_field(real_field) {
   _v_enabled = new VarBool("enable", true);
   _v_image = new VarBool("image", true);
+  _v_undistorted = new VarBool("undistorted", false);
   _v_greyscale = new VarBool("greyscale", false);
   _v_thresholded = new VarBool("thresholded", false);
   _v_blobs = new VarBool("blobs", false);
@@ -45,6 +46,7 @@ PluginVisualize::PluginVisualize(FrameBuffer *_buffer,
   _settings = new VarList("Visualization");
   _settings->addChild(_v_enabled);
   _settings->addChild(_v_image);
+  _settings->addChild(_v_undistorted);
   _settings->addChild(_v_greyscale);
   _settings->addChild(_v_thresholded);
   _settings->addChild(_v_blobs);
@@ -103,8 +105,21 @@ void PluginVisualize::DrawCameraImage(FrameData *data,
     rgb *vis_ptr = vis_frame->data.getPixelData();
     raw8 *grey_ptr = img_greyscale->getPixelData();
     for (int i = 0; i < vis_frame->data.getNumPixels(); ++i) {
-      auto& color = vis_ptr[i];
+      auto &color = vis_ptr[i];
       color.r = color.g = color.b = grey_ptr[i].v;
+    }
+  }
+  if (_v_undistorted->getBool()) {
+    Image<rgb> *undistorted =
+        reinterpret_cast<Image<rgb> *>(data->map.get("undistorted"));
+    if (undistorted != nullptr) {
+      rgb *vis_ptr = vis_frame->data.getPixelData();
+      rgb *undistorted_ptr = undistorted->getPixelData();
+      for (int i = 0; i < vis_frame->data.getNumPixels() &&
+                      i < undistorted->getNumPixels();
+           ++i) {
+        vis_ptr[i] = undistorted_ptr[i];
+      }
     }
   }
 }
